@@ -8,40 +8,46 @@ jobs:
   deploy_pages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20'
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install dependencies
-        run: |
-          pnpm install
+        run: pnpm install
 
       - name: Build frontend
-        run: |
-          # Adjust this to your frontend build command
-          pnpm build:frontend
+        run: pnpm build:frontend
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist  # adjust to your build output folder
+          publish_dir: ./frontend/dist
 
   deploy_backend:
     runs-on: ubuntu-latest
     needs: deploy_pages
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: SSH Deploy Scramjet
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 104.236.87.76  # your droplet IP
+          host: 104.236.87.76
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
