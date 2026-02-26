@@ -57,6 +57,10 @@ jobs:
           wasm-bindgen --version
           wasm-opt --version
           wasm-snip --version
+      - name: Disable wasm-opt optimization
+        run: |
+          chmod +x rewriter/wasm/build.sh
+          sed -i 's/wasm-opt/# wasm-opt disabled/g' rewriter/wasm/build.sh
 
       # Build WASM + frontend
       - name: Build frontend
