@@ -22,13 +22,13 @@ jobs:
         run: pnpm install
 
       - name: Build frontend
-        run: pnpm build:frontend
+        run: pnpm build  # matches package.json "build" script
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist
+          publish_dir: ./dist  # adjust if your build output is elsewhere
 
   deploy_backend:
     runs-on: ubuntu-latest
@@ -47,7 +47,7 @@ jobs:
       - name: SSH Deploy Scramjet
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 104.236.87.76
+          host: 104.236.87.76  # your droplet IP
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
