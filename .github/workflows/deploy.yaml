@@ -9,26 +9,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+  
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20'
-
+  
       - name: Install pnpm
         run: npm install -g pnpm
-
+  
       - name: Install dependencies
         run: pnpm install
-
-      - name: Build frontend
-        run: pnpm build  # matches package.json "build" script
-
+  
+      - name: Build frontend + WASM
+        run: |
+          pnpm rewriter:build
+          pnpm build
+  
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # adjust if your build output is elsewhere
+          publish_dir: ./dist
 
   deploy_backend:
     runs-on: ubuntu-latest
