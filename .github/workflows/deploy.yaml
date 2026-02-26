@@ -40,7 +40,7 @@ jobs:
 
       # wasm-snip
       - name: Install wasm-snip
-        run: cargo install wasm-snip --force
+        run: cargo install --git https://github.com/r58playz/wasm-snip
 
       # Setup Binaryen (compatible version)
       - name: Setup Binaryen
