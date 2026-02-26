@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -16,6 +16,8 @@ jobs:
     steps:
       # Checkout repo
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       # Node
       - name: Setup Node
