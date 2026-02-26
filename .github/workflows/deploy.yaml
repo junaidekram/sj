@@ -1,4 +1,4 @@
-name: Deploy Frontend + Backend
+name: Deploy Scramjet Frontend + Backend
 
 on:
   push:
@@ -8,68 +8,82 @@ jobs:
   deploy_pages:
     runs-on: ubuntu-latest
     steps:
+      # 1. Checkout repo
       - uses: actions/checkout@v4
-  
+
+      # 2. Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20'
-  
+
+      # 3. Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
-  
+
+      # 4. Install JS dependencies
       - name: Install dependencies
         run: pnpm install
-  
-      - name: Install Rust & WASM tools
+
+      # 5. Install Rust toolchain
+      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           override: true
-  
+
+      # 6. Install exact version of wasm-bindgen
       - name: Install wasm-bindgen-cli
-        run: cargo install wasm-bindgen-cli
-  
+        run: cargo install wasm-bindgen-cli --version 0.2.100
+
+      # 7. Install wasm-opt (binaryen)
       - name: Install wasm-opt
         run: |
           sudo apt update
           sudo apt install -y binaryen
-  
+
+      # 8. Install wasm-snip
       - name: Install wasm-snip
         run: cargo install wasm-snip
-  
+
+      # 9. Build WASM + frontend
       - name: Build frontend + WASM
         run: |
           pnpm rewriter:build
           pnpm build
-  
+
+      # 10. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./dist  # adjust if your rspack output is somewhere else
 
   deploy_backend:
     runs-on: ubuntu-latest
     needs: deploy_pages
     steps:
+      # 1. Checkout repo
       - uses: actions/checkout@v4
 
+      # 2. Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20'
 
+      # 3. Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
+      # 4. SSH deploy to DigitalOcean droplet
       - name: SSH Deploy Scramjet
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 104.236.87.76  # your droplet IP
+          host: 104.236.87.76         # your droplet IP
           username: root
-          key: ${{ secrets.DO_SSH_KEY }}
+          key: ${{ secrets.DO_SSH_KEY }}  # your private SSH key
           script: |
             cd scramjet || exit
             git pull
