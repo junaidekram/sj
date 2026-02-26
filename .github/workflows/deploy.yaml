@@ -21,6 +21,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
   
+      - name: Install Rust & WASM tools
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+  
+      - name: Install wasm-bindgen-cli
+        run: cargo install wasm-bindgen-cli
+  
+      - name: Install wasm-opt
+        run: |
+          sudo apt update
+          sudo apt install -y binaryen
+  
+      - name: Install wasm-snip
+        run: cargo install wasm-snip
+  
       - name: Build frontend + WASM
         run: |
           pnpm rewriter:build
