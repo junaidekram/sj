@@ -42,13 +42,11 @@ jobs:
       - name: Install wasm-snip
         run: cargo install wasm-snip --force
 
-      # Compatible wasm-opt (Binaryen v116)
-      - name: Install wasm-opt
-        run: |
-          wget https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
-          tar -xzf binaryen-version_116-x86_64-linux.tar.gz
-          sudo mv binaryen-version_116 /opt/binaryen
-          echo "/opt/binaryen/bin" >> $GITHUB_PATH
+      # Setup Binaryen (compatible version)
+      - name: Setup Binaryen
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
 
       # Verify tools exist (debug safety)
       - name: Verify tools
@@ -57,10 +55,6 @@ jobs:
           wasm-bindgen --version
           wasm-opt --version
           wasm-snip --version
-      - name: Disable wasm-opt optimization
-        run: |
-          chmod +x rewriter/wasm/build.sh
-          sed -i 's/wasm-opt/# wasm-opt disabled/g' rewriter/wasm/build.sh
 
       # Build WASM + frontend
       - name: Build frontend
