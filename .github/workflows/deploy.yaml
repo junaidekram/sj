@@ -8,10 +8,10 @@ jobs:
   deploy_pages:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout repo
+      # 1. Checkout repository
       - uses: actions/checkout@v4
 
-      # 2. Setup Node.js
+      # 2. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
@@ -25,15 +25,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # 5. Install Rust toolchain
-      - name: Install Rust
+      # 5. Install Rust toolchain (pin version)
+      - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: stable   # or pin a specific version if needed, e.g., 1.73.0
           profile: minimal
           override: true
 
-      # 6. Install exact version of wasm-bindgen
+      # 6. Install exact wasm-bindgen-cli required by Scramjet
       - name: Install wasm-bindgen-cli
         run: cargo install wasm-bindgen-cli --version 0.2.100
 
@@ -47,7 +47,7 @@ jobs:
       - name: Install wasm-snip
         run: cargo install wasm-snip
 
-      # 9. Build WASM + frontend
+      # 9. Build WASM and frontend
       - name: Build frontend + WASM
         run: |
           pnpm rewriter:build
@@ -58,13 +58,13 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # adjust if your rspack output is somewhere else
+          publish_dir: ./dist  # adjust if rspack outputs elsewhere
 
   deploy_backend:
     runs-on: ubuntu-latest
     needs: deploy_pages
     steps:
-      # 1. Checkout repo
+      # 1. Checkout repository
       - uses: actions/checkout@v4
 
       # 2. Setup Node.js
