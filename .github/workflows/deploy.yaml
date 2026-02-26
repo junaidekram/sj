@@ -34,8 +34,12 @@ jobs:
           override: true
 
       # 6. Install exact wasm-bindgen-cli required by Scramjet
-      - name: Install wasm-bindgen-cli
-        run: cargo install wasm-bindgen-cli --version 0.2.100
+      - name: Install wasm-opt (compatible version)
+        run: |
+          wget https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz
+          tar -xzf binaryen-version_116-x86_64-linux.tar.gz
+          sudo mv binaryen-version_116 /opt/binaryen
+          echo "/opt/binaryen/bin" >> $GITHUB_PATH
 
       # 7. Install wasm-opt (binaryen)
       - name: Install wasm-opt
