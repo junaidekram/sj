@@ -69,12 +69,16 @@ jobs:
           pnpm rewriter:build
           pnpm build
 
+      # Build static site (copies dist, static files, node_modules deps)
+      - name: Build static site
+        run: bash ./ci/build-static.sh
+
       # Deploy Pages
       - name: Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./staticbuild
       - name: Show Pages URL
         run: |
           OWNER=$(echo "$GITHUB_REPOSITORY" | cut -d'/' -f1)
